@@ -488,20 +488,26 @@ initial instability."}],
 hd2["3.2  Spinodal decomposition"],
 
 para[{"We solve the 1D Cahn\[Dash]Hilliard equation using Wolfram's \
-built-in ", mono["NDSolve"], " with the Method of Lines. The initial \
-condition is the mean composition ", math["\[Phi] = 0.3"],
-   " plus small sinusoidal perturbations."}],
+built-in ", mono["NDSolve"], " with the Method of Lines. The Flory\
+\[Dash]Huggins chemical potential is logarithmically stiff near the pure \
+phases and the strongly-stabilised 1D solver freezes; we therefore use \
+the standard symmetric double-well (Model B) order parameter ",
+   math["\[Psi]"], ", started from a uniform state plus a small \
+multi-mode periodic perturbation, and map it to a physical volume \
+fraction ", math["\[Phi] = \[Phi]\:2080 + A\[ThinSpace]\[Psi]"],
+   " for display."}],
 
-codeIn["sol = NDSolve[{
-   D[\[Phi][x, t], t] == mob D[
-      mu[\[Phi][x, t]] - \[Kappa] D[\[Phi][x, t], x, x], x, x],
-   \[Phi][x, 0] == \[Phi]0 + noise Sin[2\[Pi] k x / L],
-   \[Phi][0, t] == \[Phi][L, t],  (* periodic BCs *)
-   \[Phi]'[0, t] == \[Phi]'[L, t]},
-   \[Phi], {x, 0, L}, {t, 0, 50},
+codeIn["mu[\[Psi]_] := -a \[Psi] + b \[Psi]^3;   (* double-well Model B *)
+sol = NDSolveValue[{
+   D[\[Psi][x, t], t] == M D[
+      mu[\[Psi][x, t]] - \[Kappa] D[\[Psi][x, t], x, x], x, x],
+   \[Psi][x, 0] == icf[x],            (* smooth periodic perturbation *)
+   \[Psi][0, t] == \[Psi][L, t],      (* periodic BCs *)
+   \[Psi]'[0, t] == \[Psi]'[L, t]},
+   \[Psi], {x, 0, L}, {t, 0, T},
    Method -> {\"MethodOfLines\",
      \"SpatialDiscretization\" -> {\"TensorProductGrid\",
-       \"MinPoints\" -> 200}}];"],
+       \"MinPoints\" -> 256}}];"],
 
 imgCell["ch_1d_evolution.png"],
 captionCell["Figure 3.1  Top: space\[Dash]time density plot of the 1D \

@@ -29,65 +29,74 @@ Print["Cahn-Hilliard figures..."];
    with Flory-Huggins f(\[Phi]) and periodic BCs.
    ================================================================ *)
 
-Module[{L = 20, \[Chi] = 1.5, N1 = 100, N2 = 1, \[Kappa] = 0.5,
-        mob = 1.0, \[Phi]0 = 0.3, noise = 0.02, sol, eps = 10.^-6},
+(* The Flory-Huggins chemical potential is logarithmically stiff near
+   \[Phi]=0,1 and the strongly-stabilised 1D solver either freezes or
+   blows up into high-frequency noise (see project notes). The robust,
+   standard pedagogical model for spinodal decomposition is the symmetric
+   double-well (Model B), used here exactly as in \[Section]8.4. We solve
+   the order parameter \[Psi]\[Element][-1,1] and map it to a physical
+   volume fraction \[Phi] = \[Phi]\:2080 + A\[ThinSpace]\[Psi] for display. *)
+Module[{a = 1.0, b = 1.0, kappa = 1.0, M = 1.0, L = 80.0, T = 400.0,
+        nPts = 256, mu, coeffs, icf, sol, phiOf, \[Phi]0 = 0.4, amp = 0.28,
+        tSnap, densPlot, profPlot},
 
-   (* Chemical potential from FH *)
-   mu[\[Phi]_] := (Log[Clip[\[Phi], {eps, 1 - eps}]] + 1)/N1
-                - (Log[Clip[1 - \[Phi], {eps, 1 - eps}]] + 1)/N2
-                + \[Chi] (1 - 2 \[Phi]);
+   mu[\[Psi]_] := -a \[Psi] + b \[Psi]^3;
+   SeedRandom[17];
+   coeffs = RandomReal[{-1, 1}, 24];
+   (* smooth, exactly periodic initial condition (sines vanish at x=0,L) *)
+   icf[x_] := 0.02 Sum[coeffs[[n]] Sin[2 Pi n x/L], {n, 1, 24}];
 
-   (* Initial condition: mean + small perturbation *)
-   SeedRandom[42];
-   nPts = 200;
-   initData = Table[\[Phi]0 + noise Sin[2 Pi 3 x/L] +
-      noise Sin[2 Pi 7 x/L] + noise/2 Sin[2 Pi 13 x/L],
-      {x, Subdivide[0., L, nPts]}];
-   initFunc = Interpolation[
-      Transpose[{Subdivide[0., L, nPts], initData}],
-      InterpolationOrder -> 3, PeriodicInterpolation -> True];
-
-   Print["  Solving 1D Cahn-Hilliard PDE via NDSolve..."];
-   sol = Quiet @ NDSolve[{
-      D[\[Phi][x, t], t] == mob D[mu[\[Phi][x, t]] - \[Kappa] D[\[Phi][x, t], x, x], x, x],
-      \[Phi][x, 0] == initFunc[x],
-      \[Phi][0, t] == \[Phi][L, t],
-      Derivative[1, 0][\[Phi]][0, t] == Derivative[1, 0][\[Phi]][L, t]},
-      \[Phi], {x, 0, L}, {t, 0, 50},
+   Print["  Solving 1D Cahn-Hilliard PDE (double-well Model B) via NDSolve..."];
+   sol = Quiet @ NDSolveValue[{
+      D[\[Psi][x, t], t] == M D[mu[\[Psi][x, t]] - kappa D[\[Psi][x, t], x, x], x, x],
+      \[Psi][x, 0] == icf[x],
+      \[Psi][0, t] == \[Psi][L, t],
+      Derivative[1, 0][\[Psi]][0, t] == Derivative[1, 0][\[Psi]][L, t]},
+      \[Psi], {x, 0, L}, {t, 0, T},
       Method -> {"MethodOfLines",
         "SpatialDiscretization" -> {"TensorProductGrid",
-          "MinPoints" -> 200, "MaxPoints" -> 400}},
-      MaxSteps -> 100000,
-      AccuracyGoal -> 4, PrecisionGoal -> 4];
+          "MinPoints" -> nPts, "MaxPoints" -> nPts}},
+      MaxSteps -> 500000, AccuracyGoal -> 5, PrecisionGoal -> 5];
 
-   If[MatchQ[sol, {{_Rule}}],
+   If[Head[sol] === InterpolatingFunction,
      Print["  NDSolve succeeded."];
+     phiOf[x_, t_] := Clip[\[Phi]0 + amp sol[x, t], {0., 0.8}];
+     tSnap = {0, 8, 40, 150, 400};
 
-     (* Figure 1: space-time evolution *)
+     (* Figure 1: space-time evolution + composition profiles *)
+     (* Legends placed Below (horizontal) so they never overflow the
+        right edge and get clipped by GraphicsColumn / Export. *)
+     densPlot = DensityPlot[phiOf[x, t], {x, 0, L}, {t, 0, T},
+        PlotRange -> {0, 0.8}, ColorFunction -> "TemperatureMap",
+        PlotPoints -> 90,
+        PlotLegends -> Placed[BarLegend[{"TemperatureMap", {0, 0.8}},
+          LegendLabel -> "\[Phi]  (red = dense, blue = dilute)",
+          LegendLayout -> "Row"], Below],
+        FrameLabel -> {"Position x", "Time t"},
+        PlotLabel -> Style["1D spinodal decomposition (space-time)", 14],
+        AspectRatio -> 0.4, ImageSize -> 620];
+
+     profPlot = Plot[Evaluate[Table[phiOf[x, t], {t, tSnap}]], {x, 0, L},
+        PlotStyle -> (Directive[Thick, #] & /@ {
+          Darker[Blue, 0.3], Blue, Darker[Green], Orange, Red}),
+        PlotLegends -> Placed[
+          LineLegend[
+            (Directive[Thick, #] & /@ {
+               Darker[Blue, 0.3], Blue, Darker[Green], Orange, Red}),
+            (Row[{"t = ", #}] & /@ tSnap),
+            LegendLayout -> "Row", LegendMarkerSize -> 24,
+            Background -> Directive[GrayLevel[1, 0.7]]],
+          Scaled[{0.5, 0.93}]],
+        PlotPoints -> 200, MaxRecursion -> 2,
+        Frame -> True,
+        FrameLabel -> {"Position x", "Volume fraction \[Phi]"},
+        PlotLabel -> Style["Composition profiles at selected times", 13],
+        PlotRange -> {0, 0.85},
+        GridLines -> Automatic, GridLinesStyle -> Directive[LightGray],
+        ImageSize -> 620];
+
      Export[FileNameJoin[{imgDir, "ch_1d_evolution.png"}],
-       GraphicsColumn[{
-         DensityPlot[Evaluate[\[Phi][x, t] /. sol[[1]]],
-           {x, 0, L}, {t, 0, 50},
-           PlotRange -> {0, 0.8},
-           ColorFunction -> "TemperatureMap",
-           PlotLegends -> Placed[BarLegend[{"TemperatureMap", {0, 0.8}},
-             LegendLabel -> "\[Phi]"], Right],
-           FrameLabel -> {"Position x", "Time t"},
-           PlotLabel -> Style["1D spinodal decomposition (space-time)", 14],
-           ImageSize -> 600, AspectRatio -> 0.4],
-         Plot[
-           Evaluate[Table[\[Phi][x, t] /. sol[[1]], {t, {0, 2, 10, 30, 50}}]],
-           {x, 0, L},
-           PlotStyle -> (Directive[Thick, #] & /@ {
-             Darker[Blue, 0.3], Blue, Darker[Green], Orange, Red}),
-           PlotLegends -> {"t = 0", "t = 2", "t = 10", "t = 30", "t = 50"},
-           Frame -> True,
-           FrameLabel -> {"Position x", "Volume fraction \[Phi]"},
-           PlotLabel -> Style["Composition profiles at selected times", 13],
-           PlotRange -> {0, 1},
-           GridLines -> Automatic, GridLinesStyle -> Directive[LightGray],
-           ImageSize -> 600]
-       }, Spacings -> 15],
+       GraphicsColumn[{densPlot, profPlot}, Spacings -> 15],
        ImageResolution -> 200];
      Print["  saved ch_1d_evolution.png"],
 

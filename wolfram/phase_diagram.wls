@@ -90,14 +90,23 @@ Module[{N1 = 100, N2 = 1, cp, \[Chi]vals, \[Phi]range, plots},
        PlotStyle -> (Directive[Thick, #] & /@ {
           Darker[Blue, 0.3], Blue, Darker[Green],
           Darker[Orange], Darker[Red]}),
-       PlotLegends -> (Row[{"\[Chi] = ", NumberForm[#, {3, 3}]}] & /@ \[Chi]vals),
+       PlotLegends -> Placed[
+          LineLegend[
+            (Directive[Thick, #] & /@ {
+               Darker[Blue, 0.3], Blue, Darker[Green],
+               Darker[Orange], Darker[Red]}),
+            (Row[{"\[Chi] = ", NumberForm[#, {3, 3}]}] & /@ \[Chi]vals),
+            LegendMarkerSize -> 22,
+            Background -> Directive[GrayLevel[0, 0.55]],
+            LabelStyle -> Directive[White, 11]],
+          Scaled[{0.52, 0.74}]],
        AxesLabel -> {"\[Phi]", "f(\[Phi])/kT"},
        PlotLabel -> Style[Row[{"Flory\[Dash]Huggins free energy  (", Subscript["N", "1"],
           " = ", N1, ", ", Subscript["N", "2"], " = ", N2, ")"}], 14],
        PlotRange -> {Automatic, {-0.15, 0.02}},
        GridLines -> {{}, {0}},
        GridLinesStyle -> Directive[Gray, Dashed],
-       ImageSize -> 640, Frame -> True,
+       ImageSize -> 720, Frame -> True,
        FrameLabel -> {"Volume fraction \[Phi]",
           "Free energy density  f(\[Phi])/kT"}],
      ImageResolution -> 200];
