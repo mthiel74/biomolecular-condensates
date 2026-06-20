@@ -354,7 +354,7 @@ displayMath[
 ],
 
 para[{"Inside the spinodal, the free energy is concave (",
-   math["\[PartialD]\[Superscript]2f/\[PartialD]\[Phi]\[Superscript]2 < 0"],
+   math["\[PartialD]\:00b2f/\[PartialD]\[Phi]\:00b2 < 0"],
    ") and the system is ", bold["unstable"], " to infinitesimal \
 composition fluctuations \[LongDash] this is ", bold["spinodal \
 decomposition"], ". Between the spinodal and the ", bold["binodal"],
@@ -530,7 +530,7 @@ para[{"Droplets with ", math["R < R*"], " have higher equilibrium \
 concentration than the bulk \[LongDash] they dissolve. Droplets with \
 ", math["R > R*"], " have lower equilibrium concentration \[LongDash] \
 they grow. The mean domain size grows as ", math["\[LeftAngleBracket]R\
-\[RightAngleBracket] \[Proportional] t\[Superscript](1/3)"],
+\[RightAngleBracket] \[Proportional] t^(1/3)"],
    ", the classic LSW scaling."}],
 
 imgCell["proto_ostwald.png"],
@@ -538,7 +538,7 @@ captionCell["Figure 3.2  Ostwald ripening of a polydisperse condensate \
 population. Upper left: size distribution evolution (early: broad, \
 late: narrower with larger mean). Upper right: number of surviving \
 droplets decreases as small ones dissolve. Lower left: mean and max \
-radius vs time with t\[Superscript](1/3) fit. Lower right: schematic \
+radius vs time with t^(1/3) fit. Lower right: schematic \
 showing material transfer from small to large droplets."]
 }];
 
@@ -601,7 +601,7 @@ displayMath[
 
 para[{"If both reactants partition equally (",
    math["K\:2090 \[TildeTilde] K\:2091 \[TildeTilde] K"], "), the \
-reaction rate is enhanced by ", bold["K\[Superscript]2"], ". With \
+reaction rate is enhanced by ", bold["K\:00b2"], ". With \
 K = 100, this is a ", bold["10,000-fold enhancement"],
    ". This is the quantitative answer to the concentration problem \
 in prebiotic chemistry: you don't need a concentrated primordial soup \
@@ -610,9 +610,9 @@ if you have phase separation."}],
 imgCell["kin_rate_enhancement.png"],
 captionCell["Figure 4.1  Reaction rate enhancement inside condensates \
 as a function of the partition coefficient K. Bimolecular reactions \
-(blue) are enhanced by K\[Superscript]2; trimolecular reactions (red) \
-by K\[Superscript]3. At the typical condensate K \[TildeTilde] 100, \
-bimolecular rates are 10\[Superscript]4 higher inside the condensate."],
+(blue) are enhanced by K\:00b2; trimolecular reactions (red) \
+by K\:00b3. At the typical condensate K \[TildeTilde] 100, \
+bimolecular rates are 10\:2074 higher inside the condensate."],
 
 hd2["4.3  Prebiotic chemistry phase space"],
 
@@ -670,7 +670,7 @@ displayMath[
 
 para[{"At low substrate concentrations (",
    math["K [S] \[LessLess] K\:2098"], "), the rate scales as ",
-   math["K\[Superscript]2"], " \[LongDash] the full bimolecular \
+   math["K\:00b2"], " \[LongDash] the full bimolecular \
 enhancement. At saturation (",
    math["K [S] \[GreaterGreater] K\:2098"], "), the rate scales as K \
 (only the enzyme enhancement matters)."}],
@@ -857,8 +857,8 @@ a UCST phase diagram with the critical concentration shifting to lower \
 values for longer/more multivalent molecules. (2) The Cahn\[Dash]Hilliard \
 equation, solved natively by ", mono["NDSolve"], ", captures the \
 dynamics of spinodal decomposition and the subsequent coarsening \
-(Lifshitz\[Dash]Slyozov t\[ThinSpace]\[Superscript](1/3) scaling). \
-(3) The concentration enhancement argument (K\[Superscript]2 for \
+(Lifshitz\[Dash]Slyozov t\[ThinSpace]^(1/3) scaling). \
+(3) The concentration enhancement argument (K\:00b2 for \
 bimolecular reactions) provides a quantitative resolution to the \
 dilute-ocean problem in prebiotic chemistry. (4) Protocell simulations \
 show that condensate populations can undergo proto-Darwinian selection \
