@@ -1154,6 +1154,12 @@ partition coefficients send each client to its preferred condensate. \
 (b) A ternary (A, B, solvent) free energy with two immiscible minima. \
 (c) Distinct droplets carry distinct molecular cargo."],
 
+imgCell["p3_wl_multicomponent.png"],
+captionCell["Figure 10.3  (Wolfram.) The same critical-point migration rendered \
+natively: as the component number ", math["N"], " grows from 2 to 10 the spinodal \
+widens and its critical point (white dots) slides to lower concentration and lower \
+interaction, exactly tracking ", math["\[Phi]_c=1/(1+\[Sqrt]N)"], "."],
+
 hd2["10.2  Darwinian selection among protocells"],
 
 para[{"The intellectual climax. Three coupled fields \[LongDash] a \
@@ -1173,23 +1179,31 @@ para[{bold["The result is natural selection from pure physics."],
 a mutation-selection balance \[LongDash] no biology is hand-coded; selection \
 is an emergent consequence of the dynamics."}],
 
+para[{ital["What the selection requires."], " The effect is not automatic: it \
+demands ", bold["Malthusian (per-capita) replication competing for a shared, \
+global nutrient"], " together with a uniform chemostat dilution. Replacing the \
+shared resource with a ", ital["local"], " carrying capacity, or raising the \
+mutation rate too high, erases the inheritance signal \[LongDash] mean fitness \
+then drifts rather than climbs and selection collapses. The trajectory below is \
+therefore a genuine result of the chosen ecology, not a foregone conclusion."}],
+
 imgCell["darwin_fitness.png"],
-captionCell["Figure 10.3  (a) Population mean fitness rises 1.19\[Rule]1.67 \
+captionCell["Figure 10.4  (a) Population mean fitness rises 1.19\[Rule]1.67 \
 over 14 generations and saturates below ", math["g_max"], ". (b) The \
 cargo-weighted genotype distribution shifts toward fitter replicators."],
 
 imgCell["darwin_generations.png"],
-captionCell["Figure 10.4  Snapshots of the droplet field coloured by fitness \
+captionCell["Figure 10.5  Snapshots of the droplet field coloured by fitness \
 (yellow = fitter). Low-fitness (blue) droplets dissolve while fit droplets \
 proliferate by fission and dominate the population."],
 
 imgCell["darwin_lineage.png"],
-captionCell["Figure 10.5  Protocell lineages: a genuine phylogeny in which the \
+captionCell["Figure 10.6  Protocell lineages: a genuine phylogeny in which the \
 fit (yellow) lineage branches and takes over while low-fitness lineages go \
 extinct (node colour = fitness, size = cargo load)."],
 
 imgCell["p3_wl_selection.png"],
-captionCell["Figure 10.6  (Wolfram ", mono["NDSolve"], ".) The well-mixed \
+captionCell["Figure 10.7  (Wolfram ", mono["NDSolve"], ".) The well-mixed \
 chemostat limit: competing genotypes (right) and the rising mean fitness \
 (left) confirm the spatial result analytically."],
 
@@ -1205,19 +1219,19 @@ more than the inhibitor, the diffusion ratio ", math["D_v/D_u"],
    " the droplet: spots self-organise inside the condensate and nowhere else."}],
 
 imgCell["rd_interface_hotspots.png"],
-captionCell["Figure 10.7  ", math["A+B\[Rule]P"], " inside condensates. \
+captionCell["Figure 10.8  ", math["A+B\[Rule]P"], " inside condensates. \
 Confinement (", math["D_dense/D_dilute=0.08"], ") keeps substrate ", math["A"],
    " in an outer shell where it meets the interior partner ", math["B"],
    "; the product (rightmost panel) forms in a ring at the interface."],
 
 imgCell["rd_turing_patterns.png"],
-captionCell["Figure 10.8  Intra-droplet Turing patterns. The activator field \
+captionCell["Figure 10.9  Intra-droplet Turing patterns. The activator field \
 forms spots inside the condensates and stays flat in the dilute phase (42\
 \[Times] amplitude contrast); the bar chart shows ", math["D_v/D_u"],
    " crossing the Schnakenberg threshold ", math["d_c=10.7"], " inside."],
 
 imgCell["p3_wl_turing.png"],
-captionCell["Figure 10.9  (Wolfram.) Schnakenberg linear-stability growth rate: \
+captionCell["Figure 10.10  (Wolfram.) Schnakenberg linear-stability growth rate: \
 a band of wavenumbers is unstable inside the dense phase while every mode is \
 stable in the dilute phase."],
 
@@ -1233,13 +1247,20 @@ drive Ostwald ripening, so a ", bold["population"],
    " run coarsens toward a single winner (Ianeselli 2022)."}],
 
 imgCell["wetdry_population.png"],
-captionCell["Figure 10.10  Droplet number over time: under wet-dry cycling the \
+captionCell["Figure 10.11  Droplet number over time: under wet-dry cycling the \
 population is repeatedly reset and sustained, whereas constant ", math["\[Chi]"],
    " coarsens away as the Lifshitz\[Dash]Slyozov ", math["t^(-2/3)"],
    " law. Each dry phase also re-concentrates cargo (a prebiotic ratchet)."],
 
+imgCell["wetdry_morphology.png"],
+captionCell["Figure 10.12  The same contest seen in the 2D droplet fields. \
+Top row (constant ", math["\[Chi]"], "): Ostwald ripening coarsens the emulsion \
+toward a few large winners. Bottom row (wet\[Dash]dry cycling): each dissolution \
+half-cycle wipes out the size differences that drive ripening, so a dense \
+population of comparable droplets is continually regenerated."],
+
 imgCell["p3_wl_wetdry.png"],
-captionCell["Figure 10.11  (Wolfram ", mono["NDSolve"],
+captionCell["Figure 10.13  (Wolfram ", mono["NDSolve"],
    ".) 1D wet-dry Cahn\[Dash]Hilliard space\[Dash]time: domains dissolve at \
 each wet half-cycle and re-form at each dry half-cycle."],
 
@@ -1254,7 +1275,7 @@ the mass-conserving rate-enhancement landscape with its optimal ridge ",
 codimension-2 points of the model."}],
 
 imgCell["param_space_grand.png"],
-captionCell["Figure 10.12  The condensate model's parameter space. \
+captionCell["Figure 10.14  The condensate model's parameter space. \
 (A) ", math["(\[Phi]_0,\[Kappa])"], ": spinodal / nucleation / homogeneous, \
 with the codim-2 apex where the spinodal meets the finite-size cutoff. \
 (B) ", math["(k_fuel,\[Lambda])"], ": dissolution / microphase / macrophase \
@@ -1263,7 +1284,7 @@ from short 2D simulations. (C) ", math["(\[Chi],N)"],
 (D) ", math["(K,p)"], ": rate enhancement with the optimal ridge."],
 
 imgCell["p3_wl_paramspace.png"],
-captionCell["Figure 10.13  (Wolfram.) The two analytic planes rendered \
+captionCell["Figure 10.15  (Wolfram.) The two analytic planes rendered \
 natively: the ", math["(\[Chi],N)"], " two-phase region and the ", math["(K,p)"],
    " rate-enhancement landscape with the ", math["p*\[TildeTilde]1/K"],
    " ridge."]
