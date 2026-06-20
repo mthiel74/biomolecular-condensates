@@ -13,7 +13,8 @@ scripts  = {
    "cahn_hilliard.wls",
    "kinetics.wls",
    "protocell.wls",
-   "disease.wls"
+   "disease.wls",
+   "nonlinear_dynamics.wls"
 };
 
 Print["=" <> StringRepeat["=", 59]];
