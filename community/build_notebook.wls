@@ -35,9 +35,11 @@
       7. Condensates and disease
          7.1 Liquid-to-gel-to-aggregate
          7.2 Phase diagram of material states
-      8. Conclusions
-      9. References
-     10. Reproducibility
+      8. Nonlinear dynamics: stability, bifurcation, coarsening
+      9. Active and chemically-maintained condensates
+     10. Conclusions
+     11. References
+     12. Reproducibility
 *)
 
 repoRoot = ParentDirectory @ DirectoryName[$InputFileName];
@@ -988,12 +990,125 @@ K/4, far below the open-system K\:00b2."]
 
 
 (* ============================================================
-   \[Section]9 Conclusions
+   \[Section]9 Active and chemically-maintained condensates
    ============================================================ *)
 
 writeAll[{
 
-hd1["9.  Conclusions"],
+hd1["9.  Active and chemically-maintained condensates"],
+
+para[{"Living condensates are not at equilibrium: ATP-driven reactions \
+continually build up and break down their components. This section extends \
+the model with chemistry. Code: ", mono["src/active_models.py"], ", ",
+   mono["src/fh_extensions.py"], ", and ", mono["wolfram/active_dynamics.wls"], "."}],
+
+hd2["9.1  Reaction-arrested coarsening"],
+
+para[{"Add a linear chemical reaction that interconverts droplet material and \
+a soluble form, ", math["s(\[Phi]) = k_+(1-\[Phi]) - k_-\[Phi] = -k_react\
+(\[Phi]-\[Phi]_ss)"], ", to the conserved dynamics:"}],
+
+displayMath[
+   RowBox[{FractionBox["\[PartialD]\[Phi]", "\[PartialD]t"], "=",
+     "M", " ", SuperscriptBox["\[Del]", "2"], "\[Mu]", "-",
+     SubscriptBox["k", "react"],
+     RowBox[{"(", RowBox[{"\[Phi]", "-", SubscriptBox["\[Phi]", "ss"]}], ")"}]}]
+],
+
+para[{"The reaction adds a uniform ", math["-k_react"], " to the growth \
+rate, ", math["\[Omega](k) = -Mk\:00b2(f\[Prime]\[Prime]+\[Kappa]k\:00b2) - k_react"],
+   ", which ", bold["stabilises the long-wavelength modes"], ": the unstable \
+band becomes finite and a length scale is selected. Ostwald ripening is \
+arrested and the system settles into a steady-state emulsion \[LongDash] the \
+mechanism behind chemically-active droplets (Zwicker 2015; Bauermann 2024)."}],
+
+imgCell["nld_wl_active_dispersion.png"],
+captionCell["Figure 9.1  Reaction-modified dispersion relation. Increasing \
+the reaction rate pushes the small-k (long-wavelength) modes below zero, \
+leaving a finite unstable band -- coarsening can no longer proceed to \
+arbitrarily large domains."],
+
+imgCell["nld_wl_reaction_1d.png"],
+captionCell["Figure 9.2  1D reaction-Cahn-Hilliard (NDSolve). (a) Without \
+reaction the domains coarsen. (b) With reaction the pattern freezes into a \
+steady-state periodic structure of selected wavelength."],
+
+para[{"In 2D (Python spectral solver) the same mechanism turns the coarse, \
+ever-growing morphology into a fine ", bold["steady-state emulsion"], " whose \
+droplet size ", math["L*"], " decreases with reaction rate (measured exponent \
+", math["L* ~ k^(-0.20)"], " in this Brazovskii-type microphase regime, \
+distinct from the droplet reaction-limited ", math["R* ~ sqrt(D/k)"], "), \
+and the steady-state size distribution is narrower than the passive LSW one."}],
+
+imgCell["active_morphology_distribution.png"],
+captionCell["Figure 9.3  (Python 2D spectral solver.) Passive coarsening \
+(left) vs. the reaction-arrested steady-state emulsion (centre); the active \
+size distribution (right) is narrower than the passive one (Bauermann 2024)."],
+
+hd2["9.2  Active Model B: broken detailed balance"],
+
+para[{"A genuinely non-equilibrium term ", math["\[Lambda]|\[Del]\[Phi]|\:00b2"],
+   " added to the chemical potential breaks detailed balance (Active Model B; \
+Tjhung 2018). Measured honestly, this term shifts the coexistence densities \
+", bold["asymmetrically"], " (the dense phase becomes denser than the dilute \
+phase is dilute) and modestly slows coarsening, but does ", ital["not"], " by \
+itself arrest it \[LongDash] the robust route to a steady-state emulsion is \
+the chemical reaction of \[Section]9.1."}],
+
+hd2["9.3  Stickers and spacers: multivalency drives phase separation"],
+
+para[{"Real biomolecules interact through specific, saturable contacts \
+(\"stickers\" joined by flexible \"spacers\"; Harmon & Pappu 2017). Adding a \
+saturable association free energy ", math["f_bond = \[Phi]_s [ln(1-p)+\
+p/2]"], " (bond fraction ", math["p"], " from the law of mass action ",
+   math["p/(1-p)\:00b2 = K_a \[Phi]_s"], ", ", math["\[Phi]_s = v\[Phi]"],
+   ") to the Flory-Huggins free energy expands the two-phase region and lowers \
+the critical interaction: higher sticker valence ", math["v"], " makes phase \
+separation far easier."}],
+
+imgCell["nld_wl_stickers.png"],
+captionCell["Figure 9.4  Stickers-and-spacers spinodal curves. Each curve \
+bounds the two-phase region; increasing sticker valence pushes the critical \
+point down and outward -- multivalency drives liquid-liquid phase separation \
+even when simple mixing is unfavourable."],
+
+hd2["9.4  Thermal-gradient fission: membrane-free division"],
+
+para[{"A temperature gradient makes the interaction ", math["\[Chi] ~ 1/T"],
+   " position-dependent. A warm band (weakened cohesion) drawn through an \
+elongated droplet dissolves its neck and splits it into two daughters \
+\[LongDash] division without a membrane, a candidate protocell mechanism \
+(Ianeselli 2022). The split is genuinely band-driven: two domains form with \
+the band, only one without it."}],
+
+imgCell["active_thermal_fission.png"],
+captionCell["Figure 9.5  (Python 2D spectral solver.) An elongated droplet \
+(left) is divided by a central warm band where the well depth a(x) dips below \
+zero (right): the neck dissolves and two daughter droplets pinch off, \
+conserving mass."],
+
+hd2["9.5  The dispersion surface"],
+
+para[{"Finally, the linear-stability result of \[Section]8 viewed as a \
+surface: the growth rate ", math["\[Omega](k,\[Phi]_0)"], " over the whole \
+plane of wavenumber and composition, with the neutral-stability ridge ",
+   math["\[Omega]=0"], " marking the boundary of the unstable region."}],
+
+imgCell["nld_wl_dispersion_surface.png"],
+captionCell["Figure 9.6  The Cahn-Hilliard dispersion surface \[Omega](k, \
+\[Phi]\:2080) for the Flory-Huggins free energy. The unstable dome shrinks to \
+nothing as the composition approaches the spinodal edge; the cyan curve is \
+the neutral-stability ridge."]
+}];
+
+
+(* ============================================================
+   \[Section]10 Conclusions
+   ============================================================ *)
+
+writeAll[{
+
+hd1["10.  Conclusions"],
 
 para[{ital["What we showed."], " (1) The Flory\[Dash]Huggins lattice \
 theory, implemented in a few lines of Wolfram Language, correctly \
@@ -1026,12 +1141,12 @@ was hiding in plain sight inside biology."}]
 
 
 (* ============================================================
-   \[Section]10 References
+   \[Section]11 References
    ============================================================ *)
 
 writeAll[{
 
-hd1["10.  References"],
+hd1["11.  References"],
 
 para[{bold["Flory, P. J."], " (1942). Thermodynamics of high polymer \
 solutions. ", ital["Journal of Chemical Physics"], " 10, 51\[Dash]61."}],
@@ -1091,12 +1206,12 @@ and phase behavior of intrinsically disordered proteins. ",
 
 
 (* ============================================================
-   \[Section]11 Reproducibility
+   \[Section]12 Reproducibility
    ============================================================ *)
 
 writeAll[{
 
-hd1["11.  Reproducibility"],
+hd1["12.  Reproducibility"],
 
 para[{"All source code lives in the repository ",
    link["github.com/mthiel74/biomolecular-condensates",
@@ -1119,7 +1234,10 @@ python3 src/flory_huggins.py
 python3 src/cahn_hilliard.py
 python3 src/condensate_kinetics.py
 python3 src/protocell.py
-python3 src/nonlinear_analysis.py   # nonlinear-dynamics analysis (\[Section]8)"],
+python3 src/nonlinear_analysis.py   # nonlinear-dynamics analysis (\[Section]8)
+python3 src/fh_extensions.py        # stickers-and-spacers (\[Section]9.3)
+python3 src/active_models.py        # active condensates (\[Section]9)
+python3 src/phase3_heroes.py        # hero visualisations"],
 
 para[{Style["Generated on " <> DateString[Now, {"MonthName", " ",
     "DayShort", ", ", "Year"}] <> " with Wolfram Language " <>

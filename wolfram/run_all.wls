@@ -14,7 +14,8 @@ scripts  = {
    "kinetics.wls",
    "protocell.wls",
    "disease.wls",
-   "nonlinear_dynamics.wls"
+   "nonlinear_dynamics.wls",
+   "active_dynamics.wls"
 };
 
 Print["=" <> StringRepeat["=", 59]];
