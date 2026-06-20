@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
-"""Generate a hero MP4 animation of 2D spinodal decomposition.
+"""Hero MP4 of 2D spinodal decomposition — clean, elegant, no clutter.
 
-Uses the CahnHilliard2D solver from cahn_hilliard.py. Produces a
-smooth, labeled, publication-quality animation showing droplets
-forming from a homogeneous mixture via Cahn-Hilliard dynamics.
-
-Output: saved to iCloud drop zone as MP4.
+256x256 Cahn-Hilliard simulation. Just the phase field evolving.
+Minimal overlay: a small time counter, nothing else. The physics
+speaks for itself.
 """
 
 import sys
@@ -22,22 +20,25 @@ DROP_ZONE = Path.home() / "Library/Mobile Documents/com~apple~CloudDocs/Document
 OUT_MP4 = DROP_ZONE / "2026-06-20_condensate-spinodal-decomposition.mp4"
 OUT_REPO = Path(__file__).resolve().parent.parent / "figures" / "spinodal_decomposition.mp4"
 
-# Custom colormap: deep blue (dilute) → white (critical) → warm amber (dense)
-colors_list = [
-    (0.05, 0.10, 0.35),  # deep navy
-    (0.15, 0.30, 0.65),  # steel blue
-    (0.40, 0.60, 0.85),  # soft blue
-    (0.95, 0.95, 0.97),  # near-white
-    (0.95, 0.75, 0.30),  # warm amber
-    (0.85, 0.35, 0.10),  # burnt orange
-    (0.55, 0.10, 0.05),  # deep red-brown
+# Colormap: deep teal (dilute) → luminous gold (dense phase / condensate)
+# Perceptually smooth, print-safe, more beautiful than viridis for this physics
+cmap_colors = [
+    (0.031, 0.075, 0.130),   # near-black teal
+    (0.035, 0.145, 0.215),   # dark ocean
+    (0.050, 0.230, 0.310),   # deep teal
+    (0.090, 0.360, 0.390),   # teal
+    (0.180, 0.500, 0.420),   # muted green-teal
+    (0.380, 0.620, 0.380),   # olive transition
+    (0.620, 0.720, 0.300),   # warm chartreuse
+    (0.830, 0.790, 0.220),   # golden
+    (0.950, 0.860, 0.310),   # bright gold
+    (1.000, 0.925, 0.520),   # luminous gold
 ]
-condensate_cmap = LinearSegmentedColormap.from_list("condensate", colors_list, N=256)
+cmap = LinearSegmentedColormap.from_list("teal_gold", cmap_colors, N=512)
 
-print("Spinodal decomposition animation")
+print("Spinodal decomposition animation (clean version)")
 print("=" * 50)
 
-# Higher resolution, longer run for the hero animation
 sim = CahnHilliard2D(L=20.0, N=256, chi=1.5, N1=100, N2=1,
                      mobility=1.0, kappa=0.5, dt=0.002)
 sim.initialize(phi_mean=0.3, noise_amplitude=0.01, seed=42)
@@ -48,118 +49,58 @@ duration_sec = 20
 n_frames = fps * duration_sec
 steps_per_frame = max(1, int(total_time / sim.dt / n_frames))
 
-print(f"  Grid: {sim.N}x{sim.N}, total_time={total_time}")
-print(f"  Frames: {n_frames}, steps/frame: {steps_per_frame}")
-print(f"  Generating frames...")
+print(f"  {sim.N}x{sim.N}, {n_frames} frames, {steps_per_frame} steps/frame")
 
-# Collect all frames first for smooth progress
-frames = []
-times_arr = []
-energies = []
-
-frames.append(sim.phi.copy())
-times_arr.append(sim.time)
-energies.append(sim.total_free_energy())
+frames = [sim.phi.copy()]
+times = [0.0]
 
 for i in range(n_frames):
     sim.run(steps_per_frame)
     frames.append(sim.phi.copy())
-    times_arr.append(sim.time)
-    energies.append(sim.total_free_energy())
-    if (i + 1) % 50 == 0:
-        print(f"    frame {i+1}/{n_frames}  t={sim.time:.2f}")
+    times.append(sim.time)
+    if (i + 1) % 100 == 0:
+        print(f"    frame {i+1}/{n_frames}  t={sim.time:.1f}")
 
-print(f"  Simulation complete. Rendering MP4...")
+print("  Rendering...")
 
-# Set up the figure
-fig = plt.figure(figsize=(10, 8.5), facecolor='#0a0a1a')
-gs = fig.add_gridspec(5, 1, height_ratios=[0.05, 1, 0.02, 0.18, 0.02],
-                      hspace=0.15, left=0.08, right=0.92, top=0.92, bottom=0.04)
+# Square figure, black background, no axes, no colorbar — just the field
+px = 1080
+dpi = 150
+fig_size = px / dpi
 
-ax_title = fig.add_subplot(gs[0])
-ax_title.axis('off')
-title_text = ax_title.text(
-    0.5, 0.5,
-    "Spinodal Decomposition — Biomolecular Condensate Formation",
-    transform=ax_title.transAxes, ha='center', va='center',
-    fontsize=16, fontweight='bold', color='white',
-    fontfamily='sans-serif')
+fig, ax = plt.subplots(figsize=(fig_size, fig_size), facecolor='black')
+fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
+ax.set_position([0, 0, 1, 1])
+ax.axis('off')
 
-ax_main = fig.add_subplot(gs[1])
-ax_energy = fig.add_subplot(gs[3])
+im = ax.imshow(frames[0], cmap=cmap, vmin=0.0, vmax=0.72,
+               origin='lower', interpolation='bilinear', aspect='equal')
 
-# Main image
-im = ax_main.imshow(frames[0], extent=[0, sim.L, 0, sim.L],
-                    cmap=condensate_cmap, vmin=0.0, vmax=0.75,
-                    origin='lower', interpolation='bilinear', aspect='equal')
-ax_main.set_xlabel("x  (reduced units)", fontsize=11, color='#cccccc')
-ax_main.set_ylabel("y  (reduced units)", fontsize=11, color='#cccccc')
-ax_main.tick_params(colors='#888888', labelsize=9)
-for spine in ax_main.spines.values():
-    spine.set_color('#444444')
-
-time_label = ax_main.text(
-    0.98, 0.96, "t = 0.00", transform=ax_main.transAxes,
-    ha='right', va='top', fontsize=14, fontweight='bold',
-    color='white', fontfamily='monospace',
-    bbox=dict(boxstyle='round,pad=0.3', facecolor='black', alpha=0.6))
-
-# Physics annotation (appears after initial phase)
-physics_label = ax_main.text(
-    0.02, 0.04, "", transform=ax_main.transAxes,
-    ha='left', va='bottom', fontsize=10, color='#dddddd',
-    fontfamily='sans-serif',
-    bbox=dict(boxstyle='round,pad=0.3', facecolor='black', alpha=0.5))
-
-# Colorbar
-cbar = fig.colorbar(im, ax=ax_main, fraction=0.03, pad=0.02)
-cbar.set_label("Volume fraction  φ", fontsize=11, color='#cccccc')
-cbar.ax.tick_params(colors='#888888', labelsize=9)
-
-# Energy subplot
-ax_energy.set_facecolor('#0a0a1a')
-energy_line, = ax_energy.plot([], [], color='#ff9933', lw=1.5)
-ax_energy.set_xlabel("Time", fontsize=9, color='#aaaaaa')
-ax_energy.set_ylabel("Free energy F[φ]", fontsize=9, color='#aaaaaa')
-ax_energy.tick_params(colors='#666666', labelsize=8)
-for spine in ax_energy.spines.values():
-    spine.set_color('#333333')
-ax_energy.set_xlim(0, total_time)
-e_arr = np.array(energies)
-ax_energy.set_ylim(e_arr.min() * 1.05, e_arr.max() * 0.98)
-ax_energy.grid(True, alpha=0.15, color='#444444')
-
-def get_phase_text(t):
-    if t < 1:
-        return "Homogeneous mixture — metastable"
-    elif t < 5:
-        return "Spinodal instability — uphill diffusion"
-    elif t < 15:
-        return "Droplet formation — phase separation"
-    elif t < 35:
-        return "Coarsening — Ostwald ripening (⟨R⟩ ~ t¹ᐟ³)"
-    else:
-        return "Late-stage coarsening — fewer, larger droplets"
+# Minimal time label — small, unobtrusive, bottom-right
+time_text = ax.text(0.97, 0.03, "", transform=ax.transAxes,
+                    ha='right', va='bottom',
+                    fontsize=11, fontfamily='monospace',
+                    color='white', alpha=0.55)
 
 
-def update(frame_idx):
-    im.set_data(frames[frame_idx])
-    time_label.set_text(f"t = {times_arr[frame_idx]:.2f}")
-    physics_label.set_text(get_phase_text(times_arr[frame_idx]))
-    energy_line.set_data(times_arr[:frame_idx+1], energies[:frame_idx+1])
-    return [im, time_label, physics_label, energy_line]
+def update(idx):
+    im.set_data(frames[idx])
+    time_text.set_text(f"t = {times[idx]:.1f}")
+    return [im, time_text]
 
 
 ani = animation.FuncAnimation(fig, update, frames=len(frames),
-                              interval=1000/fps, blit=True)
+                              interval=1000 / fps, blit=True)
 
-writer = animation.FFMpegWriter(fps=fps, bitrate=4000,
-                                extra_args=['-vf', 'pad=ceil(iw/2)*2:ceil(ih/2)*2',
-                                            '-pix_fmt', 'yuv420p'])
-ani.save(str(OUT_MP4), writer=writer, dpi=150)
+writer = animation.FFMpegWriter(
+    fps=fps, bitrate=5000,
+    extra_args=['-vf', 'pad=ceil(iw/2)*2:ceil(ih/2)*2',
+                '-pix_fmt', 'yuv420p'])
+
+ani.save(str(OUT_MP4), writer=writer, dpi=dpi)
 print(f"  saved {OUT_MP4}")
 
-ani.save(str(OUT_REPO), writer=writer, dpi=150)
+ani.save(str(OUT_REPO), writer=writer, dpi=dpi)
 print(f"  saved {OUT_REPO}")
 
 plt.close(fig)
