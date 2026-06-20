@@ -84,7 +84,12 @@ displayMath[expr_] := Cell[
 imgCacheDir = FileNameJoin[{repoRoot, "community", ".img-cache"}];
 If[!DirectoryQ[imgCacheDir], CreateDirectory[imgCacheDir]];
 
-targetWidth[path_] := 520;
+(* Embedded raster width in pixels. High-resolution source PNGs
+   (docs/images/*.png are typically 1700-4200 px wide) are preserved
+   up to this cap; only genuinely huge panoramas are downsampled. At a
+   ~560 pt display size this gives ~180 DPI, a big improvement over the
+   old 520 px cap (which rendered at ~58 DPI). *)
+targetWidth[path_] := 1400;
 
 resizedCopy[path_] := Module[{cached, w, h, im, target},
    cached = FileNameJoin[{imgCacheDir, FileNameTake[path]}];
@@ -124,7 +129,7 @@ imageBoxes[path_String] := Module[
           " Selectable -> False",
         "],",
         " DefaultBaseStyle -> \"ImageGraphics\",",
-        " ImageSize -> ", ToString[Round[640]], ",",
+        " ImageSize -> Full,",
         " ImageSizeRaw -> {", ToString[w], ", ", ToString[h], "},",
         " PlotRange -> {{0, ", ToString[w], "}, {0, ", ToString[h], "}}",
       "]"
@@ -1501,7 +1506,7 @@ TimeConstrained[
    UsingFrontEnd[
       nbObj = NotebookOpen[outNb, Visible -> False];
       Quiet @ Check[
-         Export[outPdf, nbObj];
+         Export[outPdf, nbObj, ImageResolution -> 300];
          Print["wrote ", outPdf, " (", FileByteCount[outPdf], " B)"],
          Print["warn: PDF export failed"]];
       NotebookClose[nbObj];
