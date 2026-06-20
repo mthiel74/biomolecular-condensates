@@ -1103,12 +1103,180 @@ the neutral-stability ridge."]
 
 
 (* ============================================================
-   \[Section]10 Conclusions
+   \[Section]10 Phase 3: selection, patterns and cycles
    ============================================================ *)
 
 writeAll[{
 
-hd1["10.  Conclusions"],
+hd1["10.  Emergent complexity: selection, patterns and cycles"],
+
+para[{"The final layer of the model lets genuinely life-like behaviour \
+emerge from the same physics. Code: ", mono["src/multicomponent.py"], ", ",
+   mono["src/darwinian_selection.py"], ", ",
+   mono["src/reaction_diffusion_cargo.py"], ", ",
+   mono["src/wet_dry_cycling.py"], ", ", mono["src/parameter_space.py"],
+   ", and the Wolfram companion ", mono["wolfram/phase3_extensions.wls"], "."}],
+
+hd2["10.1  Multi-component condensates"],
+
+para[{"Real condensates contain dozens of macromolecules. For ", math["N"],
+   " mutually attracting components that co-condense in near-stoichiometric \
+proportions, the demixing entropy is reduced as if they were one effective \
+polymer of length ", math["N"], ", and the symmetric Flory-Huggins critical \
+point migrates (Qian & Knowles 2022):"}],
+
+displayMath[
+   RowBox[{SubscriptBox["\[Phi]", "c"], "=",
+     FractionBox["1", RowBox[{"1", "+", SqrtBox["N"]}]], ",",
+     "\[InvisibleSpace]", "\[InvisibleSpace]",
+     SubscriptBox["\[Chi]", "c"], "=",
+     FractionBox[RowBox[{"2", " ",
+        SuperscriptBox[RowBox[{"(", "1", "+", SqrtBox["N"], ")"}], "2"]}],
+       "N"]}]
+],
+
+para[{"As ", math["N"], " grows the critical concentration falls toward zero \
+\[LongDash] multivalent mixtures phase-separate at vanishing concentration \
+\[LongDash] and the critical interaction drops, so they demix far more easily. \
+Distinct scaffolds give distinct condensates, and each client partitions \
+selectively into the one it binds best (the physical basis of organelle \
+identity)."}],
+
+imgCell["multicomp_phase_diagram.png"],
+captionCell["Figure 10.1  Multi-component spinodals for ", math["N=2,3,5,10"],
+   " in the Qian\[Dash]Knowles convention; the critical point (filled circles) \
+migrates as ", math["\[Phi]_c=1/(1+\[Sqrt]N)"], " toward low concentration \
+and low interaction as the number of components grows."],
+
+imgCell["multicomp_compartmentalization.png"],
+captionCell["Figure 10.2  Selective compartmentalization. (a) Boltzmann \
+partition coefficients send each client to its preferred condensate. \
+(b) A ternary (A, B, solvent) free energy with two immiscible minima. \
+(c) Distinct droplets carry distinct molecular cargo."],
+
+hd2["10.2  Darwinian selection among protocells"],
+
+para[{"The intellectual climax. Three coupled fields \[LongDash] a \
+fuel-driven phase field ", math["\[Phi]"], " (with a cargo coupling ",
+   math["-\[Beta]c"], " so cargo-rich droplets grow osmotically), a replicator \
+cargo ", math["c"], " that partitions into the dense phase and replicates at \
+a rate set by a heritable genotype ", math["g"],
+   ", and a shared global nutrient \[LongDash] reproduce the full Darwinian \
+cycle. Because the nutrient is shared and a chemostat dilution removes cargo \
+uniformly, replicators whose growth rate ", math["r_0 g"],
+   " falls below the dilution rate are out-competed (competitive exclusion). \
+Periodic thermal pulses (warm stripes, ", math["\[Chi]\[Tilde]1/T"],
+   ") divide the large droplets, and lineages are tracked by overlap."}],
+
+para[{bold["The result is natural selection from pure physics."],
+   " The cargo-weighted mean fitness rises over generations and saturates at \
+a mutation-selection balance \[LongDash] no biology is hand-coded; selection \
+is an emergent consequence of the dynamics."}],
+
+imgCell["darwin_fitness.png"],
+captionCell["Figure 10.3  (a) Population mean fitness rises 1.19\[Rule]1.67 \
+over 14 generations and saturates below ", math["g_max"], ". (b) The \
+cargo-weighted genotype distribution shifts toward fitter replicators."],
+
+imgCell["darwin_generations.png"],
+captionCell["Figure 10.4  Snapshots of the droplet field coloured by fitness \
+(yellow = fitter). Low-fitness (blue) droplets dissolve while fit droplets \
+proliferate by fission and dominate the population."],
+
+imgCell["darwin_lineage.png"],
+captionCell["Figure 10.5  Protocell lineages: a genuine phylogeny in which the \
+fit (yellow) lineage branches and takes over while low-fitness lineages go \
+extinct (node colour = fitness, size = cargo load)."],
+
+imgCell["p3_wl_selection.png"],
+captionCell["Figure 10.6  (Wolfram ", mono["NDSolve"], ".) The well-mixed \
+chemostat limit: competing genotypes (right) and the rising mean fitness \
+(left) confirm the spatial result analytically."],
+
+hd2["10.3  Reaction-diffusion inside condensates"],
+
+para[{"A condensate is also a chemical reactor. With substrate ", math["A"],
+   " fed from the dilute surroundings, partner ", math["B"],
+   " made inside, and the rate enhanced and the diffusivities reduced inside \
+the dense phase, the product forms in a thin shell \[LongDash] a reaction \
+hotspot pinned to the interface. And when crowding slows the activator far \
+more than the inhibitor, the diffusion ratio ", math["D_v/D_u"],
+   " crosses the Turing threshold ", ital["only inside"],
+   " the droplet: spots self-organise inside the condensate and nowhere else."}],
+
+imgCell["rd_interface_hotspots.png"],
+captionCell["Figure 10.7  ", math["A+B\[Rule]P"], " inside condensates. \
+Confinement (", math["D_dense/D_dilute=0.08"], ") keeps substrate ", math["A"],
+   " in an outer shell where it meets the interior partner ", math["B"],
+   "; the product (rightmost panel) forms in a ring at the interface."],
+
+imgCell["rd_turing_patterns.png"],
+captionCell["Figure 10.8  Intra-droplet Turing patterns. The activator field \
+forms spots inside the condensates and stays flat in the dilute phase (42\
+\[Times] amplitude contrast); the bar chart shows ", math["D_v/D_u"],
+   " crossing the Schnakenberg threshold ", math["d_c=10.7"], " inside."],
+
+imgCell["p3_wl_turing.png"],
+captionCell["Figure 10.9  (Wolfram.) Schnakenberg linear-stability growth rate: \
+a band of wavenumbers is unstable inside the dense phase while every mode is \
+stable in the dilute phase."],
+
+hd2["10.4  Wet-dry cycling"],
+
+para[{"On the early Earth, rock pools cycled between flooded (wet) and \
+evaporated (dry) states. Cycling the interaction ", math["\[Chi](t)=\[Chi]_0+\
+\[CapitalDelta]\[Chi] sin(2\[Pi]t/T)"], " swings the system between a \
+one-phase well (dissolve, remix) and a spinodally unstable double well \
+(re-nucleate many droplets). Each dissolution erases the size differences that \
+drive Ostwald ripening, so a ", bold["population"],
+   " of droplets is maintained, while a matched constant-", math["\[Chi]"],
+   " run coarsens toward a single winner (Ianeselli 2022)."}],
+
+imgCell["wetdry_population.png"],
+captionCell["Figure 10.10  Droplet number over time: under wet-dry cycling the \
+population is repeatedly reset and sustained, whereas constant ", math["\[Chi]"],
+   " coarsens away as the Lifshitz\[Dash]Slyozov ", math["t^(-2/3)"],
+   " law. Each dry phase also re-concentrates cargo (a prebiotic ratchet)."],
+
+imgCell["p3_wl_wetdry.png"],
+captionCell["Figure 10.11  (Wolfram ", mono["NDSolve"],
+   ".) 1D wet-dry Cahn\[Dash]Hilliard space\[Dash]time: domains dissolve at \
+each wet half-cycle and re-form at each dry half-cycle."],
+
+hd2["10.5  The accessible parameter space"],
+
+para[{"Finally, a map of every regime the model can reach, in four control \
+planes: the thermodynamic stability of the double well with a finite-size \
+cutoff; the active plane of reaction rate versus activity (dissolution / \
+microphase / macrophase); the Flory-Huggins one-phase/two-phase boundary; and \
+the mass-conserving rate-enhancement landscape with its optimal ridge ",
+   math["p*\[TildeTilde]1/K"], ". The corners where three regimes meet are the \
+codimension-2 points of the model."}],
+
+imgCell["param_space_grand.png"],
+captionCell["Figure 10.12  The condensate model's parameter space. \
+(A) ", math["(\[Phi]_0,\[Kappa])"], ": spinodal / nucleation / homogeneous, \
+with the codim-2 apex where the spinodal meets the finite-size cutoff. \
+(B) ", math["(k_fuel,\[Lambda])"], ": dissolution / microphase / macrophase \
+from short 2D simulations. (C) ", math["(\[Chi],N)"],
+   ": Flory\[Dash]Huggins two-phase region and critical line. \
+(D) ", math["(K,p)"], ": rate enhancement with the optimal ridge."],
+
+imgCell["p3_wl_paramspace.png"],
+captionCell["Figure 10.13  (Wolfram.) The two analytic planes rendered \
+natively: the ", math["(\[Chi],N)"], " two-phase region and the ", math["(K,p)"],
+   " rate-enhancement landscape with the ", math["p*\[TildeTilde]1/K"],
+   " ridge."]
+}];
+
+
+(* ============================================================
+   \[Section]11 Conclusions
+   ============================================================ *)
+
+writeAll[{
+
+hd1["11.  Conclusions"],
 
 para[{ital["What we showed."], " (1) The Flory\[Dash]Huggins lattice \
 theory, implemented in a few lines of Wolfram Language, correctly \
@@ -1124,7 +1292,11 @@ dilute-ocean problem in prebiotic chemistry. (4) Protocell simulations \
 show that condensate populations can undergo proto-Darwinian selection \
 without genetic material. (5) The liquid\[Dash]to\[Dash]gel\[Dash]to\
 \[Dash]aggregate transition connects condensate physics to \
-neurodegenerative disease."}],
+neurodegenerative disease. (6) Layering the model \[LongDash] multi-component \
+mixtures, a replicating cargo with heredity and a shared nutrient, \
+reaction-diffusion, and wet-dry cycling \[LongDash] makes genuinely life-like \
+behaviour emerge: ", bold["natural selection, Turing morphogenesis, and \
+ripening-resistant droplet populations all fall out of the same physics."]}],
 
 para[{ital["The bigger picture."], " Biomolecular condensates sit at \
 the intersection of soft-matter physics, molecular biology, the origin \
@@ -1141,12 +1313,30 @@ was hiding in plain sight inside biology."}]
 
 
 (* ============================================================
-   \[Section]11 References
+   \[Section]12 References
    ============================================================ *)
 
 writeAll[{
 
-hd1["11.  References"],
+hd1["12.  References"],
+
+para[{bold["Qian, D., Michaels, T. C. T., & Knowles, T. P. J."], " (2022). \
+Analytical solution to the Flory\[Dash]Huggins model for multicomponent phase \
+separation. ", ital["Journal of Physical Chemistry Letters"], " 13, \
+7853\[Dash]7860. [Multi-component critical point.]"}],
+
+para[{bold["Turing, A. M."], " (1952). The chemical basis of morphogenesis. ",
+   ital["Philosophical Transactions of the Royal Society B"], " 237, \
+37\[Dash]72. [Reaction-diffusion patterns.]"}],
+
+para[{bold["Eigen, M."], " (1971). Selforganization of matter and the \
+evolution of biological macromolecules. ", ital["Naturwissenschaften"],
+   " 58, 465\[Dash]523. [Competitive exclusion of replicators.]"}],
+
+para[{bold["Ianeselli, A., Atienza, M., Kudella, P. W., et al."], " (2022). \
+Water cycles dissolve and divide protocell-like droplets. ",
+   ital["Nature Chemistry"], " 14, 32\[Dash]39. [Wet-dry cycling and \
+thermal fission.]"}],
 
 para[{bold["Flory, P. J."], " (1942). Thermodynamics of high polymer \
 solutions. ", ital["Journal of Chemical Physics"], " 10, 51\[Dash]61."}],
@@ -1206,12 +1396,12 @@ and phase behavior of intrinsically disordered proteins. ",
 
 
 (* ============================================================
-   \[Section]12 Reproducibility
+   \[Section]13 Reproducibility
    ============================================================ *)
 
 writeAll[{
 
-hd1["12.  Reproducibility"],
+hd1["13.  Reproducibility"],
 
 para[{"All source code lives in the repository ",
    link["github.com/mthiel74/biomolecular-condensates",
@@ -1237,6 +1427,11 @@ python3 src/protocell.py
 python3 src/nonlinear_analysis.py   # nonlinear-dynamics analysis (\[Section]8)
 python3 src/fh_extensions.py        # stickers-and-spacers (\[Section]9.3)
 python3 src/active_models.py        # active condensates (\[Section]9)
+python3 src/multicomponent.py       # multi-component condensates (\[Section]10.1)
+python3 src/darwinian_selection.py  # Darwinian selection (\[Section]10.2)
+python3 src/reaction_diffusion_cargo.py  # reaction-diffusion (\[Section]10.3)
+python3 src/wet_dry_cycling.py      # wet-dry cycling (\[Section]10.4)
+python3 src/parameter_space.py      # parameter space (\[Section]10.5)
 python3 src/phase3_heroes.py        # hero visualisations"],
 
 para[{Style["Generated on " <> DateString[Now, {"MonthName", " ",
