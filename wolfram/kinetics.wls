@@ -31,8 +31,8 @@ Export[FileNameJoin[{imgDir, "kin_rate_enhancement.png"}],
        Directive[Thick, Dashed, Red]},
      PlotLegends -> Placed[{
        "Unimolecular (A \[Rule] B): K",
-       "Bimolecular (A + B \[Rule] C): K\[Superscript]2",
-       "Trimolecular: K\[Superscript]3"}, {0.35, 0.85}],
+       "Bimolecular (A + B \[Rule] C): K\:00b2",
+       "Trimolecular: K\:00b3"}, {0.35, 0.85}],
      Frame -> True,
      FrameLabel -> {"Partition coefficient K",
         "Reaction rate enhancement factor"},
@@ -85,10 +85,13 @@ Module[{Vmax = 1.0, Km = 10.0, kDeg = 0.05, Sfixed = 1.0,
    Figure 3: Prebiotic phase space (K vs concentration)
    ================================================================ *)
 
-Module[{Vmax = 1.0, Km = 10.0, kDeg = 0.05,
+Module[{Vmax = 1.0, Km = 10.0, kDeg = 1.0,
         Krange, Crange, netRate},
 
-   Krange = Subdivide[1., 500., 150];
+   (* kDeg = 1.0 gives K_critical ~ 10 at low c (the biologically
+      meaningful regime). At high c replication saturates while
+      degradation grows linearly, creating a nontrivial boundary. *)
+   Krange = Subdivide[1., 200., 150];
    Crange = 10^Subdivide[-3., 1., 150];
 
    netRate = Table[

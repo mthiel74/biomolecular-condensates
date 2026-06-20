@@ -34,13 +34,17 @@ def flory_huggins_mu(phi, chi, N1=100, N2=1):
 
 
 class CahnHilliard2D:
-    """Semi-implicit spectral solver for the 2D Cahn-Hilliard equation.
+    """Stabilised semi-implicit spectral solver for 2D Cahn-Hilliard.
 
-    The scheme in Fourier space:
+    Uses the Eyre-type stabilised splitting: the chemical potential
+    μ = df/dφ is split as μ = (μ - A φ) + A φ. The linear part
+    (A + κ k²) is treated implicitly; the nonlinear remainder is
+    explicit. A must exceed max |d²f/dφ²| over the expected φ range
+    to guarantee gradient stability.
 
-        φ̂^{n+1} = (φ̂^n + dt M k² μ̂^n) / (1 + dt M κ k⁴)
-
-    where k² = kx² + ky² is the squared wavenumber.
+    Update in Fourier space:
+        φ̂^{n+1} = [φ̂^n − dt M k² ĝ^n] / [1 + dt M k² (A + κ k²)]
+    where g = μ(φ) − A φ.
     """
 
     def __init__(self, L=10.0, N=128, chi=1.5, N1=100, N2=1,
@@ -59,32 +63,36 @@ class CahnHilliard2D:
         ky = 2 * np.pi * fftfreq(N, d=self.dx)
         KX, KY = np.meshgrid(kx, ky)
         self.k2 = KX**2 + KY**2
-        self.k4 = self.k2**2
+
+        # Stabilisation constant: must exceed max d²f/dφ² on [φ_lo, φ_hi].
+        # For FH with N2=1, d²f/dφ² = 1/(N1 φ) + 1/(1−φ) − 2χ.
+        # At φ=0.02: ≈ 0.5 + 50 − 3 = 47.5.  Use A=50 for safety.
+        self.A = max(2 * chi + 1, 50.0)
+
+        # Precompute implicit denominator (constant across time steps)
+        self._denom = 1.0 + dt * mobility * self.k2 * (self.A + kappa * self.k2)
 
         self.phi = None
         self.time = 0.0
         self.step_count = 0
 
     def initialize(self, phi_mean=0.3, noise_amplitude=0.01, seed=42):
-        """Random initial condition near mean composition."""
         rng = np.random.default_rng(seed)
         self.phi = phi_mean + noise_amplitude * rng.standard_normal((self.N, self.N))
-        self.phi = np.clip(self.phi, 1e-6, 1 - 1e-6)
+        self.phi = np.clip(self.phi, 1e-8, 1 - 1e-8)
         self.time = 0.0
         self.step_count = 0
 
     def step(self):
-        """One semi-implicit time step."""
         mu = flory_huggins_mu(self.phi, self.chi, self.N1, self.N2)
-        mu_hat = fft2(mu)
+        g = mu - self.A * self.phi
+        g_hat = fft2(g)
         phi_hat = fft2(self.phi)
 
-        numerator = phi_hat + self.dt * self.M * self.k2 * mu_hat
-        denominator = 1.0 + self.dt * self.M * self.kappa * self.k4
-        phi_hat_new = numerator / denominator
+        phi_hat_new = (phi_hat - self.dt * self.M * self.k2 * g_hat) / self._denom
 
         self.phi = np.real(ifft2(phi_hat_new))
-        self.phi = np.clip(self.phi, 1e-6, 1 - 1e-6)
+        self.phi = np.clip(self.phi, 1e-8, 1 - 1e-8)
         self.time += self.dt
         self.step_count += 1
 
