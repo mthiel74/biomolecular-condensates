@@ -1,3 +1,10 @@
-numpy>=1.24
-scipy>=1.10
-matplotlib>=3.7
+# Python dependencies for the src/ analysis track.
+# Pinned to the versions the figures were generated with; loosen if needed.
+numpy==1.26.4
+scipy==1.13.1
+matplotlib==3.9.0
+
+# The animation scripts (animate_spinodal.py, animate_protocell.py,
+# darwinian_selection.py) also require an ffmpeg binary on PATH for
+# matplotlib's FFMpegWriter. Install it via your OS package manager,
+# e.g.  brew install ffmpeg  /  apt-get install ffmpeg

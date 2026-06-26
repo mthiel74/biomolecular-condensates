@@ -52,9 +52,11 @@ Print["  saved kin_rate_enhancement.png"];
    Figure 2: Ribozyme kinetics — replication vs degradation
    ================================================================ *)
 
-Module[{Vmax = 1.0, Km = 10.0, kDeg = 0.05, Sfixed = 1.0,
+Module[{Vmax = 1.0, Km = 10.0, kDeg = 0.5, Sfixed = 1.0,
         Krange, vRep, vDeg},
 
+   (* kDeg = 0.5/min gives K* ~ 10 at [S] = 1 uM: replication grows ~ K^2,
+      degradation ~ K, so the origin-of-life window opens above K*. *)
    Krange = Subdivide[1., 200., 300];
 
    vRep = Table[

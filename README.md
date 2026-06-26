@@ -45,8 +45,9 @@ community/
   biomolecular_condensates.nb   Generated Wolfram Community notebook
   biomolecular_condensates.pdf  PDF export
 
-figures/                    Python-generated figures (15 PNGs)
-docs/images/                Wolfram-generated figures (13 PNGs)
+figures/                    Python-generated figures (~46 files)
+docs/images/                Figures embedded in the notebook (39 PNGs:
+                            Wolfram-generated + copied Python figures)
 ```
 
 ## Quick start
